@@ -2,22 +2,22 @@
 # building on ubi8
 ARG GOLANG_VERSION
 ARG ALPINE_VERSION
-FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} as builder
+# UBI 8 min  based build
+FROM registry.access.redhat.com/ubi8/ubi-minimal as builder
 
-RUN apk --no-cache add make gcc musl-dev binutils-gold
+RUN microdnf install go make
 
 COPY . /app
 WORKDIR /app
 
 RUN make build
 
-
-FROM alpine:${ALPINE_VERSION}
-
+FROM registry.access.redhat.com/ubi8/ubi-minimal
 LABEL maintainer="community@krakend.io"
-
-RUN apk add --no-cache ca-certificates && \
-    adduser -u 1000 -S -D -H krakend && \
+# ca-certificates there?
+#  adduser -u 1000 -S -D -H krakend
+RUN microdnf install shadow-utils  && \
+    adduser -u 1000 -r --no-create-home  krakend && \
     mkdir /etc/krakend && \
     echo '{ "version": 3 }' > /etc/krakend/krakend.json
 

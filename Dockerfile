@@ -13,7 +13,7 @@ RUN make build
 FROM alpine:${ALPINE_VERSION}
 
 LABEL maintainer="community@krakend.io"
-
+d
 RUN apk add --no-cache ca-certificates && \
     adduser -u 1000 -S -D -H krakend && \
     mkdir /etc/krakend && \
